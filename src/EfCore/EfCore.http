@@ -41,3 +41,11 @@ Content-Type: application/json
 ### Delete Product
 DELETE {{baseUrl}}/api/v1/products/P001
 Accept: application/json
+
+### Active Product
+GET {{baseUrl}}/api/v1/products/active/P002
+Accept: application/json
+
+### Deactive Product
+GET {{baseUrl}}/api/v1/products/deactive/P002
+Accept: application/json

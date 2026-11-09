@@ -31,15 +31,8 @@ public sealed class ProductController : ControllerBase
 
     // GET /api/v1/products/PR001
     [HttpGet("{productCode}")]
-    [ProducesResponseType(
-        typeof(ProductResponse),
-        StatusCodes.Status200OK)]
-    [ProducesResponseType(
-        typeof(ProblemDetails),
-        StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ProductResponse>> GetByCode(
-        [FromRoute] string productCode,
-        CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(ProductResponse),StatusCodes.Status200OK)][ProducesResponseType(typeof(ProblemDetails),StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductResponse>> GetByCode([FromRoute] string productCode,CancellationToken cancellationToken)
     {
         var product = await _service.GetByCodeAsync(
             productCode,
@@ -161,5 +154,68 @@ public sealed class ProductController : ControllerBase
         }
 
         return NoContent();
+    }
+
+		// GET /api/v1/products/active/PR001
+    [HttpGet("active/{productCode}")]
+    [ProducesResponseType(typeof(ProductResponse),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails),StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductResponse>> Active([FromRoute] string productCode,CancellationToken cancellationToken)
+    {
+			try
+			{
+				var updated = await _service.ActivateAsync(
+					productCode,
+					cancellationToken);
+
+				if (!updated)
+				{
+					return Problem(
+						statusCode: StatusCodes.Status404NotFound,
+						title: "Product not found");
+				}
+
+				return Ok(updated);
+			}
+			catch (ArgumentException ex)
+			{
+				return Problem(
+					statusCode: StatusCodes.Status400BadRequest,
+					title: "Invalid product data",
+					detail: ex.Message);
+			}
+    }
+
+
+		// GET /api/v1/products/active/PR001
+    [HttpGet("deactive/{productCode}")]
+    [ProducesResponseType(typeof(ProductResponse),StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails),StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails),StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductResponse>> Deactive([FromRoute] string productCode,CancellationToken cancellationToken)
+    {
+			try
+			{
+				var updated = await _service.DeactivateAsync(
+					productCode,
+					cancellationToken);
+
+				if (!updated)
+				{
+					return Problem(
+						statusCode: StatusCodes.Status404NotFound,
+						title: "Product not found");
+				}
+
+				return Ok(updated);
+			}
+			catch (ArgumentException ex)
+			{
+				return Problem(
+					statusCode: StatusCodes.Status400BadRequest,
+					title: "Invalid product data",
+					detail: ex.Message);
+			}
     }
 }

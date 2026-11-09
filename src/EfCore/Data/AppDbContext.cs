@@ -43,6 +43,13 @@ public class AppDbContext : DbContext
         entity.Property(p => p.Category)
             .HasMaxLength(30)
             .IsRequired();
+        
+        entity.Property(p => p.IsActive)
+            .IsRequired()
+            .HasDefaultValue(true);
+
+        entity.Property(p => p.DeactivatedAtUtc)
+            .IsRequired(false);
     });
   }
 }

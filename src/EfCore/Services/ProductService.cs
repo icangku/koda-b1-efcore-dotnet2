@@ -55,7 +55,10 @@ public sealed class ProductService : IProductService
             request.Name,
             request.Price,
             request.Stock,
-            request.Category);
+            request.Category,
+						request.IsActive,
+						request.DeactivatedAtUtc
+        );
 
         var created = await _repository.TryAddAsync(
             product,
@@ -77,7 +80,10 @@ public sealed class ProductService : IProductService
             request.Name,
             request.Price,
             request.Stock,
-            request.Category);
+            request.Category,
+						request.IsActive,
+						request.DeactivatedAtUtc
+					);
 
         var updated = await _repository.TryUpdateAsync(
             product,
@@ -103,6 +109,26 @@ public sealed class ProductService : IProductService
             productCode,
             cancellationToken);
     }
+
+  public Task<bool> ActivateAsync(string code, CancellationToken cancellationToken)
+  {
+		if (string.IsNullOrWhiteSpace(code) || code.Trim().Length > 30)
+		{
+			return Task.FromResult(false);
+		}
+
+		return _repository.TryActivateAsync(code, cancellationToken);
+  }
+
+  public Task<bool> DeactivateAsync(string code, CancellationToken cancellationToken)
+  {
+    if (string.IsNullOrWhiteSpace(code) || code.Trim().Length > 30)
+		{
+			return Task.FromResult(false);
+		}
+
+		return _repository.TryDeactivateAsync(code, cancellationToken);
+  }
 }
 public interface IProductService
 {
@@ -125,4 +151,7 @@ public interface IProductService
     Task<bool> DeleteAsync(
         string productCode,
         CancellationToken cancellationToken);
+
+    Task<bool> ActivateAsync(string code, CancellationToken cancellationToken);
+    Task<bool> DeactivateAsync(string code, CancellationToken cancellationToken);
 }

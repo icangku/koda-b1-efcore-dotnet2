@@ -1,5 +1,6 @@
 using EfCore.Data;
 using EfCore.Repositories;
+using EfCore.Seeding;
 using EfCore.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,9 @@ var connectionString = builder.Configuration.GetConnectionString("Default") ?? t
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
    options.UseSqlServer(connectionString);
+    options.UseSqlServer(connectionString)
+        .UseSeeding((context, _) => ProductSeedData.Seed(context))
+        .UseAsyncSeeding((context, _, ct) => ProductSeedData.SeedAsync(context, ct));
 });
 
 var app = builder.Build();

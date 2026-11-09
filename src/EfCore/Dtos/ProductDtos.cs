@@ -20,7 +20,13 @@ public record ProductRequest(
     int Stock,
 
     [Required, StringLength(120)]
-    string Category
+    string Category,
+
+    [Required]
+    bool IsActive,
+
+    [DataType(DataType.Date)]
+    DateTime DeactivatedAtUtc
 );
 
 public record UpdateProductRequest(
@@ -37,10 +43,16 @@ public record UpdateProductRequest(
     int Stock,
 
     [Required, StringLength(120)]
-    string Category
+    string Category,
+
+    [Required]
+    bool IsActive,
+
+    [DataType(DataType.Date)]
+    DateTime DeactivatedAtUtc
 );
 
-public sealed record ProductResponse(string ProductCode, string Name, decimal Price, int Stock, string Category)
+public sealed record ProductResponse(string ProductCode, string Name, decimal Price, int Stock, string Category, bool IsActive, DateTime? DeactivatedAtUtc)
 {
-    public static ProductResponse FromModel(Product product) => new(product.Code, product.Name, product.Price, product.Stock, product.Category);
+    public static ProductResponse FromModel(Product product) => new(product.Code, product.Name, product.Price, product.Stock, product.Category, product.IsActive, product.DeactivatedAtUtc);
 }

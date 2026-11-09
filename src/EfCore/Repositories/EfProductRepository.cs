@@ -23,6 +23,19 @@ public sealed class EfProductRepository : IProductRepository
     return await _db.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Code == code, cancellationToken);
   }
 
+  public async Task<bool> TryActivateAsync(string code, CancellationToken cancellationToken)
+  {
+    var exists = await _db.Products.FirstOrDefaultAsync(p => p.Code == code.Trim().ToUpperInvariant(), cancellationToken);
+    if (exists is null)
+    {
+      return false;
+    }
+    exists.Activate(true);
+
+    await _db.SaveChangesAsync(cancellationToken);
+    return true;
+  }
+
   public async Task<bool> TryAddAsync(Product product, CancellationToken cancellationToken)
   {
     _db.Products.Add(product);
@@ -35,6 +48,20 @@ public sealed class EfProductRepository : IProductRepository
     {
       return false;
     }
+  }
+
+  public async Task<bool> TryDeactivateAsync(string code, CancellationToken cancellationToken)
+  {
+    var exists = await _db.Products.FirstOrDefaultAsync(p => p.Code == code.Trim().ToUpperInvariant());
+
+    if(exists is null){
+      return false;
+    }
+
+    exists.Deactivate(true);
+    await _db.SaveChangesAsync(cancellationToken);
+
+    return true;
   }
 
   public async Task<bool> TryDeleteAsync(string code, CancellationToken cancellationToken)
@@ -63,7 +90,9 @@ public sealed class EfProductRepository : IProductRepository
       product.Name,
       product.Price,
       product.Stock,
-      product.Category
+      product.Category,
+      product.IsActive,
+      product.DeactivatedAtUtc
     );
 
     await _db.SaveChangesAsync(cancellationToken);
@@ -78,4 +107,6 @@ public interface IProductRepository
   Task<bool> TryAddAsync(Product product, CancellationToken cancellationToken);
   Task<bool> TryUpdateAsync(Product product, CancellationToken cancellationToken);
   Task<bool> TryDeleteAsync(string code, CancellationToken cancellationToken);
+  Task<bool> TryActivateAsync(string code, CancellationToken cancellationToken);
+  Task<bool> TryDeactivateAsync(string code, CancellationToken cancellationToken);
 }

@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace EfCore.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddProductAvailability : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,7 +23,9 @@ namespace EfCore.Migrations
                     Name = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                    Category = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    DeactivatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
